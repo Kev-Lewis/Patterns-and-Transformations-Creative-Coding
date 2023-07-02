@@ -1,0 +1,75 @@
+let webCam;
+let stepSize = 8;
+let frames = 10;
+let enabled = true;
+let camEnabled = true;
+
+function setup() {
+  createCanvas(600, 400);
+  pixelDensity(1);
+  webCam = createCapture(VIDEO);
+  webCam.size(width, height);
+  noStroke();
+}
+
+function draw() {
+  background(0);
+  frameRate(frames);
+  webCam.loadPixels();
+  if (enabled) {
+    textSize(32);
+    fill(256);
+    text("framerate: " + frames, 0, 25);
+    text("stepSize: " + stepSize, width - 175, 25);
+  }
+  if (!camEnabled) {
+    webCam.hide();
+  } else {
+    webCam.show();
+  }
+
+  for (let i = 0; i < width; i += stepSize) {
+    for (let j = 0; j < height; j += stepSize) {
+      const k = (i + j * width) * 4;
+      fill(
+        webCam.pixels[k],
+        webCam.pixels[k + 1],
+        webCam.pixels[k + 2],
+        webCam.pixels[k + 3]
+      );
+      textSize(stepSize);
+      text(String.fromCodePoint(getEmoji()), i, j);
+    }
+  }
+}
+
+function getEmoji() {
+  return int(random(8986, 129510));
+}
+
+function keyPressed() {
+  if (keyCode == UP_ARROW) {
+    if (stepSize < 20) {
+      stepSize++;
+    }
+  } else if (keyCode == DOWN_ARROW) {
+    if (stepSize > 6) {
+      stepSize--;
+    }
+  }
+  if (keyCode == RIGHT_ARROW) {
+    if (frames < 30) {
+      frames++;
+    }
+  } else if (keyCode == LEFT_ARROW) {
+    if (frames > 5) {
+      frames--;
+    }
+  }
+  if (keyCode == ENTER) {
+    enabled = !enabled;
+  }
+  if (keyCode == CONTROL) {
+    camEnabled = !camEnabled;
+  }
+}
